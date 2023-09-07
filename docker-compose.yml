@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:14.4-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: nest_sample_user
+      POSTGRES_PASSWORD: nest_sample_password
+      POSTGRES_DB: nest_sample
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+volumes:
+  postgres:
+  
