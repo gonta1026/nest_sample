@@ -14,27 +14,27 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { TodoService } from './todo.service';
+import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from '@prisma/client';
 
 @UseGuards(AuthGuard('jwt'))
-@Controller('todo')
-export class TodoController {
-  constructor(private readonly todoService: TodoService) {}
+@Controller('tasks')
+export class TaskController {
+  constructor(private readonly taskService: TaskService) {}
 
   @Get()
   getTasks(@Req() req: Request): Promise<Task[]> {
-    return this.todoService.getTasks(req.user.id);
+    return this.taskService.getTasks(req.user.id);
   }
 
   @Get(':id')
   getTaskById(
-    @Req() req: Request,
+    // @Req() req: Request,
     @Param('id', ParseIntPipe) taskId: number,
   ): Promise<Task> {
-    return this.todoService.getTaskById(req.user.id, taskId);
+    return this.taskService.getTaskById(taskId);
   }
 
   @Post()
@@ -42,24 +42,24 @@ export class TodoController {
     @Req() req: Request,
     @Body() dto: CreateTaskDto,
   ): Promise<Task> {
-    return await this.todoService.createTask(req.user.id, dto);
+    return await this.taskService.createTask(req.user.id, dto);
   }
 
   @Patch(':id')
   updateTaskById(
-    @Req() req: Request,
+    // @Req() req: Request,
     @Param('id', ParseIntPipe) taskId: number,
     @Body() dto: UpdateTaskDto,
   ): Promise<Task> {
-    return this.todoService.updateTaskById(req.user.id, taskId, dto);
+    return this.taskService.updateTaskById(taskId, dto);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteTaskById(
-    @Req() req: Request,
+    // @Req() req: Request,
     @Param('id', ParseIntPipe) taskId: number,
-  ): Promise<void> {
-    return this.todoService.deleteTaskById(req.user.id, taskId);
+  ): Promise<Task> {
+    return this.taskService.deleteTaskById(taskId);
   }
 }

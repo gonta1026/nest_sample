@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PrismaService } from '../../prisma/prisma.service';
+import { UserRepository } from 'src/repository/user.repository';
 
 type Payload = {
   sub: number; // id
@@ -15,7 +15,7 @@ type Payload = {
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     readonly config: ConfigService,
-    private readonly prisma: PrismaService,
+    private readonly userRepository: UserRepository,
   ) {
     super({
       // jwtFromRequest: ExtractJwt.fromExtractors([
@@ -36,13 +36,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: Payload) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: payload.sub,
-      },
-    });
+    const user = await this.userRepository.getById(payload.sub);
     delete user.hashedPassword;
-    console.log(user);
     return user;
   }
 }
