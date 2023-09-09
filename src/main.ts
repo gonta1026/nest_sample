@@ -14,17 +14,21 @@ async function bootstrap() {
   });
   app.use(cookieParser());
   app.use(
+    /***
+     * @note set-cookieまでしてくれて、以降のリクエストでは csrf がないとエラーを出す。
+     * **/
     csurf({
       cookie: {
         httpOnly: true,
         sameSite: 'none',
         secure: true,
       },
-      value: (req: Request) => {
-        return req.header('csrf-token');
-      },
+      value: (req: Request) => req.header('csrf-token'),
     }),
+    /***
+     * @note set-cookieまでしてくれて、以降のリクエストでは csrf がないとエラーを出す。
+     * **/
   );
-  await app.listen(process.env.PORT || 3005);
+  await app.listen(process.env.PORT ?? 3005);
 }
 bootstrap();

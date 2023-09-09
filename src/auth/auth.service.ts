@@ -1,4 +1,8 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -43,9 +47,10 @@ export class AuthService {
         email: dto.email,
       },
     });
-    if (!user) throw new ForbiddenException('Email or password incorrect');
+    if (!user) throw new UnauthorizedException('Email or password incorrect');
     const isValid = await bcrypt.compare(dto.password, user.hashedPassword);
-    if (!isValid) throw new ForbiddenException('Email or password incorrect');
+    if (!isValid)
+      throw new UnauthorizedException('Email or password incorrect');
     return this.generateJwt(user.id, user.email);
   }
 
@@ -56,7 +61,7 @@ export class AuthService {
     };
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {
-      expiresIn: '5m',
+      expiresIn: '7d',
       secret: secret,
     });
     return {

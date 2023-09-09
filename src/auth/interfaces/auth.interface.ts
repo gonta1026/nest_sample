@@ -1,5 +1,5 @@
 export interface Msg {
-  message: string;
+  message: 'ok';
 }
 export interface Csrf {
   csrfToken: string;
