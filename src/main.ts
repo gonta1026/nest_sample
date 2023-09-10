@@ -9,25 +9,16 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.enableCors({
-    credentials: true,
+    credentials: true, // cookieでやり取りをする。
     origin: ['http://localhost:3000'],
   });
   app.use(cookieParser());
   app.use(
-    /***
-     * @note set-cookieまでしてくれて、以降のリクエストでは csrf がないとエラーを出す。
-     * **/
+    /** @note set-cookieまでしてくれて、以降のリクエストでは csrf がないとエラーを出す。**/
     csurf({
-      cookie: {
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true,
-      },
+      cookie: { httpOnly: true, sameSite: 'none', secure: true },
       value: (req: Request) => req.header('csrf-token'),
     }),
-    /***
-     * @note set-cookieまでしてくれて、以降のリクエストでは csrf がないとエラーを出す。
-     * **/
   );
   await app.listen(process.env.PORT ?? 3005);
 }
